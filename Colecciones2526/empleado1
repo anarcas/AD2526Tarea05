@@ -1,0 +1,6 @@
+<empleado id="101">
+  <nombre>Ana López</nombre>
+  <puesto>Directora RRHH</puesto>
+  <departamento>D01</departamento>
+  <salario>3200</salario>
+</empleado>

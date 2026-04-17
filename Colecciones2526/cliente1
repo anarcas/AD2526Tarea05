@@ -1,0 +1,5 @@
+<cliente id="C01">
+  <nombre>Empresa Alfa</nombre>
+  <ciudad>Madrid</ciudad>
+  <telefono>910000001</telefono>
+</cliente>

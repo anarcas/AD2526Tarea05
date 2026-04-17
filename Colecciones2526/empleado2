@@ -1,0 +1,6 @@
+<empleado id="102">
+  <nombre>Carlos Pérez</nombre>
+  <puesto>Técnico RRHH</puesto>
+  <departamento>D01</departamento>
+  <salario>2100</salario>
+</empleado>

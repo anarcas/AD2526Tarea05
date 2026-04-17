@@ -1,0 +1,6 @@
+<empleado id="104">
+  <nombre>David Ruiz</nombre>
+  <puesto>Programador</puesto>
+  <departamento>D02</departamento>
+  <salario>2800</salario>
+</empleado>

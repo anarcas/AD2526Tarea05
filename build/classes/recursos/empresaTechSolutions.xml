@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<empresa nombre="TechSolutions">
+
+    <departamentos>
+        <departamento id="D01">
+            <nombre>Recursos Humanos</nombre>
+            <jefe_empleado>101</jefe_empleado>
+        </departamento>
+
+        <departamento id="D02">
+            <nombre>Informática</nombre>
+            <jefe_empleado>103</jefe_empleado>
+        </departamento>
+
+        <departamento id="D03">
+            <nombre>Ventas</nombre>
+            <jefe_empleado>106</jefe_empleado>
+        </departamento>
+
+        <departamento id="D04">
+            <nombre>Logística</nombre>
+            <jefe_empleado>108</jefe_empleado>
+        </departamento>
+    </departamentos>
+
+
+    <empleados>
+        <empleado id="101">
+            <nombre>Ana López</nombre>
+            <puesto>Directora RRHH</puesto>
+            <departamento>D01</departamento>
+            <salario>3200</salario>
+        </empleado>
+
+        <empleado id="102">
+            <nombre>Carlos Pérez</nombre>
+            <puesto>Técnico RRHH</puesto>
+            <departamento>D01</departamento>
+            <salario>2100</salario>
+        </empleado>
+
+        <empleado id="103">
+            <nombre>Laura García</nombre>
+            <puesto>Directora IT</puesto>
+            <departamento>D02</departamento>
+            <salario>4200</salario>
+        </empleado>
+
+        <empleado id="104">
+            <nombre>David Ruiz</nombre>
+            <puesto>Programador</puesto>
+            <departamento>D02</departamento>
+            <salario>2800</salario>
+        </empleado>
+
+        <empleado id="105">
+            <nombre>Sofía Martín</nombre>
+            <puesto>Programadora</puesto>
+            <departamento>D02</departamento>
+            <salario>2750</salario>
+        </empleado>
+
+        <empleado id="106">
+            <nombre>Marta Sánchez</nombre>
+            <puesto>Directora de Ventas</puesto>
+            <departamento>D03</departamento>
+            <salario>3500</salario>
+        </empleado>
+
+        <empleado id="107">
+            <nombre>Javier Torres</nombre>
+            <puesto>Comercial</puesto>
+            <departamento>D03</departamento>
+            <salario>2300</salario>
+        </empleado>
+
+        <empleado id="108">
+            <nombre>Pedro Gómez</nombre>
+            <puesto>Jefe de Logística</puesto>
+            <departamento>D04</departamento>
+            <salario>3000</salario>
+        </empleado>
+    </empleados>
+
+
+    <clientes>
+        <cliente id="C01">
+            <nombre>Empresa Alfa</nombre>
+            <ciudad>Madrid</ciudad>
+            <telefono>910000001</telefono>
+        </cliente>
+
+        <cliente id="C02">
+            <nombre>Distribuciones Beta</nombre>
+            <ciudad>Barcelona</ciudad>
+            <telefono>930000002</telefono>
+        </cliente>
+
+        <cliente id="C03">
+            <nombre>Comercial Gamma</nombre>
+            <ciudad>Valencia</ciudad>
+            <telefono>960000003</telefono>
+        </cliente>
+    </clientes>
+
+
+    <proveedores>
+        <proveedor id="PR01">
+            <nombre>Hardware Global</nombre>
+            <pais>España</pais>
+        </proveedor>
+
+        <proveedor id="PR02">
+            <nombre>Componentes Tech</nombre>
+            <pais>Alemania</pais>
+        </proveedor>
+    </proveedores>
+
+
+    <productos>
+        <producto id="P01">
+            <nombre>Portátil ProBook</nombre>
+            <precio>950</precio>
+            <proveedor>PR01</proveedor>
+        </producto>
+
+        <producto id="P02">
+            <nombre>Servidor X500</nombre>
+            <precio>3200</precio>
+            <proveedor>PR02</proveedor>
+        </producto>
+
+        <producto id="P03">
+            <nombre>Monitor 27"</nombre>
+            <precio>220</precio>
+            <proveedor>PR01</proveedor>
+        </producto>
+    </productos>
+
+
+    <pedidos>
+        <pedido id="PED01">
+            <cliente>C01</cliente>
+            <fecha>2026-02-10</fecha>
+            <productos>
+                <producto_ref>P01</producto_ref>
+                <producto_ref>P03</producto_ref>
+            </productos>
+            <total>1170</total>
+        </pedido>
+
+        <pedido id="PED02">
+            <cliente>C02</cliente>
+            <fecha>2026-02-15</fecha>
+            <productos>
+                <producto_ref>P02</producto_ref>
+            </productos>
+            <total>3200</total>
+        </pedido>
+    </pedidos>
+
+</empresa>

@@ -1,0 +1,6 @@
+<empleado id="108">
+  <nombre>Pedro Gómez</nombre>
+  <puesto>Jefe de Logística</puesto>
+  <departamento>D04</departamento>
+  <salario>3000</salario>
+</empleado>
