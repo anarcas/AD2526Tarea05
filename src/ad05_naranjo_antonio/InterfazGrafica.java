@@ -22,7 +22,13 @@ public class InterfazGrafica extends javax.swing.JFrame {
      */
     public InterfazGrafica() {
         initComponents();
+        // Se ajusta el tamaño de la ventana al contenido
+        this.pack();
+        // Se centra la ventana en la pantalla (después de pack)
+        this.setLocationRelativeTo(null);
+        // Se anula inicialmente el botón generar ficheros hasta que la base de datos no esté operativa
         jButtonGenerarFicheros.setEnabled(false);
+        jButtonListarProveedores.setEnabled(false);
     }
 
     /**
@@ -55,6 +61,10 @@ public class InterfazGrafica extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         jTextFieldxPath3 = new javax.swing.JTextField();
         jPanelEntidad = new javax.swing.JPanel();
+        jLabel11 = new javax.swing.JLabel();
+        jButtonListarProveedores = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextAreaListadoProveedores = new javax.swing.JTextArea();
         jPanel3 = new javax.swing.JPanel();
         jButtonGenerarFicheros = new javax.swing.JButton();
         jButtonInicarBD = new javax.swing.JButton();
@@ -72,8 +82,8 @@ public class InterfazGrafica extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("DejaVu Sans Mono", 1, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 0, 0));
-        jLabel1.setText("Ejercicio 1");
-        jLabel1.setToolTipText("");
+        jLabel1.setText("Ejercicio 1 >> Generar ficheros");
+        jLabel1.setToolTipText("Generar ficheros de las siguiente entidades");
 
         jTextFieldNomBD.setText("Colecciones2526");
         jTextFieldNomBD.setToolTipText("Nombre del directorio donde se guardarán los ficheros de las entidades (en la carpeta raíz del proyecto)");
@@ -173,34 +183,34 @@ public class InterfazGrafica extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel7))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextFieldDir, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
-                            .addComponent(jTextFieldNomBD))
-                        .addGap(31, 31, 31)
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-                        .addComponent(jTextFieldDirectorioBDxml, javax.swing.GroupLayout.PREFERRED_SIZE, 398, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel4)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel2)
                                     .addComponent(jLabel3))
-                                .addGap(93, 93, 93)
+                                .addGap(81, 81, 81)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jTextFieldEnt1)
                                     .addComponent(jTextFieldEnt2)
-                                    .addComponent(jTextFieldEnt3, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(jTextFieldEnt3, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel7))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jTextFieldDir)
+                                    .addComponent(jTextFieldNomBD))))
                         .addGap(30, 30, 30)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addGap(27, 27, 27)
+                                .addComponent(jTextFieldDirectorioBDxml))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel8)
                                 .addGap(18, 18, 18)
@@ -259,15 +269,49 @@ public class InterfazGrafica extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jLabel11.setFont(new java.awt.Font("DejaVu Sans Mono", 1, 14)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(255, 0, 0));
+        jLabel11.setText("Ejercicio 2.a >> Listar todos los proveedores");
+        jLabel11.setToolTipText("Listar todos los proveedores");
+
+        jButtonListarProveedores.setText("Listar proveedores");
+        jButtonListarProveedores.setToolTipText("Haz clic para crear los ficheros de las entidades en el directorio definido");
+        jButtonListarProveedores.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonListarProveedoresActionPerformed(evt);
+            }
+        });
+
+        jTextAreaListadoProveedores.setColumns(20);
+        jTextAreaListadoProveedores.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
+        jTextAreaListadoProveedores.setRows(5);
+        jScrollPane1.setViewportView(jTextAreaListadoProveedores);
+
         javax.swing.GroupLayout jPanelEntidadLayout = new javax.swing.GroupLayout(jPanelEntidad);
         jPanelEntidad.setLayout(jPanelEntidadLayout);
         jPanelEntidadLayout.setHorizontalGroup(
             jPanelEntidadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(jPanelEntidadLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanelEntidadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanelEntidadLayout.createSequentialGroup()
+                        .addComponent(jLabel11)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanelEntidadLayout.createSequentialGroup()
+                        .addComponent(jScrollPane1)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButtonListarProveedores)))
+                .addContainerGap())
         );
         jPanelEntidadLayout.setVerticalGroup(
             jPanelEntidadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 120, Short.MAX_VALUE)
+            .addGroup(jPanelEntidadLayout.createSequentialGroup()
+                .addComponent(jLabel11)
+                .addGap(18, 18, 18)
+                .addGroup(jPanelEntidadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButtonListarProveedores, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(8, Short.MAX_VALUE))
         );
 
         jButtonGenerarFicheros.setText("Generar ficheros de entidades");
@@ -311,11 +355,11 @@ public class InterfazGrafica extends javax.swing.JFrame {
         jPanelXpath.setLayout(jPanelXpathLayout);
         jPanelXpathLayout.setHorizontalGroup(
             jPanelXpathLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 873, Short.MAX_VALUE)
         );
         jPanelXpathLayout.setVerticalGroup(
             jPanelXpathLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 125, Short.MAX_VALUE)
+            .addGap(0, 150, Short.MAX_VALUE)
         );
 
         jButtonSalir.setText("Salir de la aplicación");
@@ -353,8 +397,8 @@ public class InterfazGrafica extends javax.swing.JFrame {
                     .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanelEntidad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanelXpath, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanelXpath, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanelEntidad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -368,9 +412,9 @@ public class InterfazGrafica extends javax.swing.JFrame {
                 .addComponent(jPanelEntidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jPanelXpath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -388,7 +432,7 @@ public class InterfazGrafica extends javax.swing.JFrame {
             try {
                 // 1. Recogemos el directorio y validamos que no esté vacío
                 String directorioStr = jTextFieldDir.getText().trim();
-
+                
                 if (directorioStr.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "Debe especificar un nombre para el directorio de destino.");
                 } else {
@@ -402,11 +446,11 @@ public class InterfazGrafica extends javax.swing.JFrame {
                     // 4. Éxito: Feedback visual para el usuario
                     JOptionPane.showMessageDialog(this, "Proceso finalizado correctamente.\nFicheros generados en: " + directorioStr);
                 }
-
+                
             } catch (BaseXException ex) {
                 // Si el error viene específicamente de BaseX (ej: error en XPath)
                 JOptionPane.showMessageDialog(this, "Error de BaseX: " + ex.getMessage(), "Error en Motor XML", JOptionPane.ERROR_MESSAGE);
-
+                
             } catch (IOException e) {
                 // Errores de disco, permisos, carpeta...
                 JOptionPane.showMessageDialog(this, "Error de archivos: " + e.getMessage(), "Error E/S", JOptionPane.ERROR_MESSAGE);
@@ -468,14 +512,15 @@ public class InterfazGrafica extends javax.swing.JFrame {
             } else {
                 // Instanciamos el manejador (esto ejecuta el conectar() interno)
                 manejador = new ManejadorXML(nombre, ruta);
-
+                
                 JOptionPane.showMessageDialog(this, "Conexión con BaseX establecida con éxito.");
 
                 // Si todo ha ido bien, habilitamos el botón de generar
                 jButtonInicarBD.setEnabled(false);
                 jButtonGenerarFicheros.setEnabled(true);
+                jButtonListarProveedores.setEnabled(true);
                 jTextFieldNomBD.setEditable(false);
-        jTextFieldDirectorioBDxml.setEditable(false);
+                jTextFieldDirectorioBDxml.setEditable(false);
             }
         } catch (Exception e) {
             // Si el XML no existe o BaseX falla, capturamos el error aquí
@@ -490,7 +535,7 @@ public class InterfazGrafica extends javax.swing.JFrame {
         int confirmacion = JOptionPane.showConfirmDialog(this,
                 "¿Estás seguro de que deseas salir?", "Confirmar salida",
                 JOptionPane.YES_NO_OPTION);
-
+        
         if (confirmacion == JOptionPane.YES_OPTION) {
             if (manejador != null) {
                 manejador.cerrar();
@@ -504,7 +549,7 @@ public class InterfazGrafica extends javax.swing.JFrame {
         int confirmacion = JOptionPane.showConfirmDialog(this,
                 "¿Estás seguro de que deseas salir?", "Confirmar salida",
                 JOptionPane.YES_NO_OPTION);
-
+        
         if (confirmacion == JOptionPane.YES_OPTION) {
             if (manejador != null) {
                 manejador.cerrar();
@@ -512,6 +557,18 @@ public class InterfazGrafica extends javax.swing.JFrame {
             System.exit(0); // Cerramos todo
         }
     }//GEN-LAST:event_formWindowClosing
+
+    private void jButtonListarProveedoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonListarProveedoresActionPerformed
+        // TODO add your handling code here:
+        if (manejador != null) {
+            try {
+                String listado = manejador.obtenerListadoProveedores();
+                jTextAreaListadoProveedores.setText(listado);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error al listar proveedores: " + e.getMessage());
+            }
+        }
+    }//GEN-LAST:event_jButtonListarProveedoresActionPerformed
 
     /**
      * @param args the command line arguments
@@ -551,9 +608,11 @@ public class InterfazGrafica extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonGenerarFicheros;
     private javax.swing.JButton jButtonInicarBD;
+    private javax.swing.JButton jButtonListarProveedores;
     private javax.swing.JButton jButtonSalir;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -567,6 +626,8 @@ public class InterfazGrafica extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanelEntidad;
     private javax.swing.JPanel jPanelXpath;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea jTextAreaListadoProveedores;
     private javax.swing.JTextField jTextFieldDir;
     private javax.swing.JTextField jTextFieldDirectorioBDxml;
     private javax.swing.JTextField jTextFieldEnt1;

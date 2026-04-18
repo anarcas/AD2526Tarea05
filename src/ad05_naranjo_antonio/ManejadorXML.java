@@ -15,31 +15,30 @@ import org.basex.core.cmd.CreateDB;
 import org.basex.core.cmd.XQuery;
 
 /**
- * Clase encargada de la lógica de negocio y conexión con BaseX.
- * Gestiona la base de datos XML y la exportación de colecciones.
- * 
+ * Clase encargada de la lógica de negocio y conexión con BaseX. Gestiona la
+ * base de datos XML y la exportación de colecciones.
+ *
  * @author Antonio Naranjo Castillo
  * @version 1.0
  * @since 17/04/2026
  */
 public class ManejadorXML {
-    
+
     private final Context contexto;
     private final String nombreDB;
     private final String directorioDB;
-    
 
     // Constructor de la conexión
     public ManejadorXML(String nombreBD, String rutaXML) throws Exception {
         this.contexto = new Context(); // Inicializamos el motor
         this.nombreDB = nombreBD;
         this.directorioDB = rutaXML;
-        
+
         // Se realiza la conexión a la base de datos
         conectar();
 
     }
-    
+
     // Método para abrir o crear la base de datos
     private void conectar() throws Exception {
         // Se crea el comando con el nombre de la base de datos y la ruta del fichero XML a consultar
@@ -54,17 +53,19 @@ public class ManejadorXML {
             contexto.close();
         }
     }
-    
-  /*
+
+    /*
     * Ejecuta una consulta XQuery y devuelve el resultado como String
-    */
- public String consultar(String query) throws BaseXException{
-    XQuery xq = new XQuery (query);
-    return xq.execute(this.contexto);
-}
- 
- /**
-     * Método que coordina la exportación masiva basada en los campos de la interfaz.
+     */
+    public String consultar(String query) throws BaseXException {
+        XQuery xq = new XQuery(query);
+        return xq.execute(this.contexto);
+    }
+
+    /**
+     * Método que coordina la exportación masiva basada en los campos de la
+     * interfaz.
+     *
      * @param nombreCarpeta Ruta del directorio
      * @param entidades Array con nombres de ficheros (ej: "empleado")
      * @param xpaths Array con rutas XPath (ej: "//empleados/empleado")
@@ -82,33 +83,33 @@ public class ManejadorXML {
             }
         }
     }
- 
- // Método para extrear la información de cada nodo y guardarlos en los ficheros
- public void procesarEntidad(File directorio, String entidad, String xpath) throws Exception{
- // Obtenemos el total de elementos
- String totalStr =consultar("count("+xpath+")");
- int total =Integer.parseInt(totalStr.trim());
- 
- // Validación crítica de la información introducida por el usuario
-    if (total == 0) {
-        // Lanzamos un error descriptivo que atrapará el catch de la interfaz
-        throw new Exception("La consulta para '" + entidad + "' (" + xpath + ") no ha devuelto resultados. "
-                + "Verifique que la entidad y el XPath son correctos.");
+
+    // Método para extrear la información de cada nodo y guardarlos en los ficheros
+    public void procesarEntidad(File directorio, String entidad, String xpath) throws Exception {
+        // Obtenemos el total de elementos
+        String totalStr = consultar("count(" + xpath + ")");
+        int total = Integer.parseInt(totalStr.trim());
+
+        // Validación crítica de la información introducida por el usuario
+        if (total == 0) {
+            // Lanzamos un error descriptivo que atrapará el catch de la interfaz
+            throw new Exception("La consulta para '" + entidad + "' (" + xpath + ") no ha devuelto resultados. "
+                    + "Verifique que la entidad y el XPath son correctos.");
+        }
+
+        System.out.println(">> Extrayendo " + total + " registros de: " + entidad);
+        for (int i = 1; i <= total; i++) {
+            // Consulta el nodo en la posición i
+            String contenido = consultar(xpath + "[" + i + "]");
+            // Crear el fichero
+            File archivo = new File(directorio, entidad + i);
+            escribirFichero(archivo, contenido);
+
+        }
     }
- 
-     System.out.println(">> Extrayendo "+total+" registros de: "+entidad);
-     for (int i = 1; i <= total; i++) {
-         // Consulta el nodo en la posición i
-         String contenido=consultar(xpath+"["+i+"]");
-         // Crear el fichero
-         File archivo = new File(directorio, entidad+i);
-         escribirFichero(archivo,contenido);
-         
-     }
- }
- 
+
     // Método para crear el directorio
-     public void crearDirectorio(File directorio) throws IOException {
+    public void crearDirectorio(File directorio) throws IOException {
         if (!directorio.exists()) {
             if (directorio.mkdirs()) {
                 System.out.println("Directorio '" + directorio.getName() + "' creado con éxito.");
@@ -117,9 +118,9 @@ public class ManejadorXML {
             System.out.println("El directorio '" + directorio.getName() + "' ya existe.");
         }
     }
-     
-     // Método para crear el archivo
-     public void crearFichero(File archivo) throws IOException {
+
+    // Método para crear el archivo
+    public void crearFichero(File archivo) throws IOException {
         if (!archivo.exists()) {
             if (archivo.createNewFile()) {
                 System.out.println("   Fichero '" + archivo.getName() + "' creado.");
@@ -128,14 +129,41 @@ public class ManejadorXML {
             System.out.println("   Fichero '" + archivo.getName() + "' ya existe.");
         }
     }
-     
-     // Método para escribir en el fichero
-     public void escribirFichero(File fichero, String contenido) throws  IOException{
+
+    // Método para escribir en el fichero
+    public void escribirFichero(File fichero, String contenido) throws IOException {
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fichero))) {
             bw.write(contenido);
             bw.newLine();
             System.out.println("   Escritura completada: " + fichero.getPath());
 
-    }}
+        }
+
+    }
+
+    public String obtenerListadoProveedores() throws Exception {
+        StringBuilder sb = new StringBuilder();
+
+        // Añadimos una cabecera para que quede bonito y tabulado
+        sb.append(String.format("%-35s %-20s%n", "NOMBRE", "PAÍS"));
+        sb.append("------------------------------------------------------------\n");
+
+        // Consulta para obtener todos los nodos proveedor
+        // Usamos el método consultar que ya tenemos
+        // Nota: Dependiendo de tu XML, los nombres de los tags pueden variar (nombre, pais, etc.)
+        String nombres = consultar("//proveedores/proveedor/nombre/text()");
+        String paises = consultar("//proveedores/proveedor/pais/text()");
+
+        // BaseX devuelve los resultados separados por saltos de línea por defecto
+        String[] arrayNombres = nombres.split("\n");
+        String[] arrayPaises = paises.split("\n");
+
+        // Recorremos y tabulamos
+        for (int i = 0; i < arrayNombres.length; i++) {
+            sb.append(String.format("%-35s %-20s%n", arrayNombres[i].trim(), arrayPaises[i].trim()));
+        }
+
+        return sb.toString();
+    }
 }
