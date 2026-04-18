@@ -9,26 +9,131 @@ import javax.swing.JOptionPane;
 import org.basex.core.BaseXException;
 
 /**
+ * Clase que implementa la interfaz gráfica de usuario (GUI) para la gestión de
+ * la aplicación. Actúa como la capa de presentación, coordinando la interacción
+ * del usuario con el manejador de la base de datos XML (ManejadorXML).
+ * Implementa el control de estado de los componentes según la disponibilidad de
+ * la conexión.
  *
- * @author anaranjo
+ * @author Antonio Naranjo Castillo
+ * @version 1.0
+ * @since 18/04/2026
  */
 public class InterfazGrafica extends javax.swing.JFrame {
 
-    // Atributo para el manejador de base de datos XML
+    // Instancia del controlador responsable de las operaciones sobre la base de datos XML.
     private ManejadorXML manejador;
 
     /**
-     * Creates new form InterfazGrafica
+     * Constructor de la clase. Inicializa los componentes de la interfaz,
+     * establece la disposición espacial y configura el estado inicial de los
+     * controles mediante la desactivación de funcionalidades dependientes de la
+     * base de datos.
      */
     public InterfazGrafica() {
         initComponents();
-        // Se ajusta el tamaño de la ventana al contenido
+        // Ajuste dinámico de las dimensiones de la ventana al contenido generado
         this.pack();
-        // Se centra la ventana en la pantalla (después de pack)
+        // Centrado de la ventana en el área de visualización del escritorio
         this.setLocationRelativeTo(null);
-        // Se anula inicialmente el botón generar ficheros hasta que la base de datos no esté operativa
+        // Configuración inicial de seguridad: deshabilitar operaciones sin conexión activa
+        desactivarComponentes();
+
+    }
+
+    /**
+     * Alimenta el componente JComboBox con los identificadores de empleados
+     * extraídos de la base de datos.
+     *
+     * @throws BaseXException Si la consulta de recuperación de IDs falla.
+     * @throws IOException Si ocurre un error durante el acceso a los datos.
+     */
+    private void iniciarComboIDempleados() throws BaseXException, IOException {
+        // Limpieza previa del componente para evitar duplicidad de datos en recargas
+        jComboBoxIdsEmpleados.removeAllItems();
+        String[] ids = manejador.obtenerListadoIDEmpleados();
+        // Carga iterativa de los identificadores en el selector
+        for (String id : ids) {
+            jComboBoxIdsEmpleados.addItem(id);
+        }
+
+    }
+
+    /**
+     * Sincroniza el JComboBox con los identificadores de pedidos disponibles en
+     * el sistema.
+     *
+     * @throws BaseXException Si la consulta XQuery falla.
+     * @throws IOException Si ocurre un error de E/S.
+     */
+    private void iniciarComboIDpedidos() throws BaseXException, IOException {
+        jComboBoxIdsPedidos.removeAllItems();
+        String[] ids = manejador.obtenerListadoIDPedidos();
+        for (String id : ids) {
+            jComboBoxIdsPedidos.addItem(id);
+        }
+
+    }
+
+    /**
+     * Carga el catálogo de nombres de productos en el componente de selección.
+     *
+     * @throws BaseXException Si falla la recuperación de productos.
+     * @throws IOException Si se produce un error de ejecución.
+     */
+    private void iniciarComboNombresProductos() throws BaseXException, IOException {
+        jComboBoxNombresProductos.removeAllItems();
+        String[] nombres = manejador.obtenerListadoNombresProductos();
+        for (String nombre : nombres) {
+            jComboBoxNombresProductos.addItem(nombre);
+        }
+
+    }
+
+    /**
+     * Habilita los componentes de la interfaz de usuario una vez establecida la
+     * conexión con la base de datos, restringiendo simultáneamente la edición
+     * de campos de configuración.
+     */
+    private void activarComponentes() {
+
+        // Activación de la lógica de negocio y listados
+        jButtonInicarBD.setEnabled(false);
+        jButtonCerrarBD.setEnabled(true);
+        jButtonGenerarFicheros.setEnabled(true);
+        jButtonListarProveedores.setEnabled(true);
+        jButtonListarEmpleados.setEnabled(true);
+        jButtonListarProductos.setEnabled(true);
+        jButtonListarPedidos.setEnabled(true);
+        jButtonActualizarPrecio.setEnabled(true);
+
+        // Bloqueo de campos de configuración para evitar inconsistencias durante la sesión
+        jTextFieldNomBD.setEditable(false);
+        jTextFieldDirectorioBDxml.setEditable(false);
+
+    }
+
+    /**
+     * Deshabilita los componentes de la interfaz de usuario que requieren una
+     * conexión activa, restableciendo la capacidad de edición para los
+     * parámetros de inicialización de la base de datos.
+     */
+    private void desactivarComponentes() {
+
+        // Restricción de acceso a funcionalidades de consulta y manipulación
+        jButtonInicarBD.setEnabled(true);
+        jButtonCerrarBD.setEnabled(false);
         jButtonGenerarFicheros.setEnabled(false);
         jButtonListarProveedores.setEnabled(false);
+        jButtonListarEmpleados.setEnabled(false);
+        jButtonListarProductos.setEnabled(false);
+        jButtonListarPedidos.setEnabled(false);
+        jButtonActualizarPrecio.setEnabled(false);
+
+        // Habilitación de la edición para reconectar o reconfigurar la base de datos
+        jTextFieldNomBD.setEditable(true);
+        jTextFieldDirectorioBDxml.setEditable(true);
+
     }
 
     /**
@@ -60,17 +165,46 @@ public class InterfazGrafica extends javax.swing.JFrame {
         jTextFieldxPath2 = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         jTextFieldxPath3 = new javax.swing.JTextField();
+        jButtonGenerarFicheros = new javax.swing.JButton();
+        jButtonInicarBD = new javax.swing.JButton();
+        jButtonCerrarBD = new javax.swing.JButton();
         jPanelEntidad = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
         jButtonListarProveedores = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextAreaListadoProveedores = new javax.swing.JTextArea();
-        jPanel3 = new javax.swing.JPanel();
-        jButtonGenerarFicheros = new javax.swing.JButton();
-        jButtonInicarBD = new javax.swing.JButton();
         jPanelXpath = new javax.swing.JPanel();
+        jLabel12 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextAreaListadoEmpleados = new javax.swing.JTextArea();
+        jButtonListarEmpleados = new javax.swing.JButton();
+        jComboBoxIdsEmpleados = new javax.swing.JComboBox<>();
+        jLabel13 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jButtonSalir = new javax.swing.JButton();
+        jPanelXpath1 = new javax.swing.JPanel();
+        jLabel14 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTextAreaListadoProductos = new javax.swing.JTextArea();
+        jButtonListarProductos = new javax.swing.JButton();
+        jLabel15 = new javax.swing.JLabel();
+        jTextFieldPrecio = new javax.swing.JTextField();
+        jPanelXpath2 = new javax.swing.JPanel();
+        jLabel16 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jTextAreaListadoPedidos = new javax.swing.JTextArea();
+        jButtonListarPedidos = new javax.swing.JButton();
+        jComboBoxIdsPedidos = new javax.swing.JComboBox<>();
+        jLabel17 = new javax.swing.JLabel();
+        jPanelXpath3 = new javax.swing.JPanel();
+        jLabel18 = new javax.swing.JLabel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        jTextAreaListadoPrecio = new javax.swing.JTextArea();
+        jButtonActualizarPrecio = new javax.swing.JButton();
+        jComboBoxNombresProductos = new javax.swing.JComboBox<>();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        jTextFieldNuevoPrecio = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Base de datos XML TechSolutions | AD Tarea 05 - Antonio Naranjo");
@@ -80,26 +214,17 @@ public class InterfazGrafica extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("DejaVu Sans Mono", 1, 14)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 0, 0));
-        jLabel1.setText("Ejercicio 1 >> Generar ficheros");
+        jPanel1.setBackground(new java.awt.Color(204, 255, 153));
+
+        jLabel1.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
+        jLabel1.setText("Ejercicio 1 >> Generar ficheros de las entidades indicadas previas consultas xPath");
         jLabel1.setToolTipText("Generar ficheros de las siguiente entidades");
 
         jTextFieldNomBD.setText("Colecciones2526");
         jTextFieldNomBD.setToolTipText("Nombre del directorio donde se guardarán los ficheros de las entidades (en la carpeta raíz del proyecto)");
-        jTextFieldNomBD.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldNomBDActionPerformed(evt);
-            }
-        });
 
         jTextFieldDirectorioBDxml.setText("src/recursos/empresaTechSolutions.xml");
         jTextFieldDirectorioBDxml.setToolTipText("Ruta relativa de acceso a la base de datos XML");
-        jTextFieldDirectorioBDxml.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldDirectorioBDxmlActionPerformed(evt);
-            }
-        });
 
         jLabel5.setText("Directorio: ");
 
@@ -109,11 +234,6 @@ public class InterfazGrafica extends javax.swing.JFrame {
 
         jTextFieldDir.setText("Colecciones2526");
         jTextFieldDir.setToolTipText("Nombre del directorio donde se guardarán los ficheros de las entidades (en la carpeta raíz del proyecto)");
-        jTextFieldDir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldDirActionPerformed(evt);
-            }
-        });
 
         jLabel2.setText("Entidad 1: ");
 
@@ -123,55 +243,53 @@ public class InterfazGrafica extends javax.swing.JFrame {
 
         jTextFieldEnt3.setText("proveedor");
         jTextFieldEnt3.setToolTipText("Nombre de la entidad 3");
-        jTextFieldEnt3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldEnt3ActionPerformed(evt);
-            }
-        });
 
         jTextFieldEnt2.setText("cliente");
         jTextFieldEnt2.setToolTipText("Nombre de la entidad 2");
-        jTextFieldEnt2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldEnt2ActionPerformed(evt);
-            }
-        });
 
         jTextFieldEnt1.setText("empleado");
         jTextFieldEnt1.setToolTipText("Nombre de la entidad 1");
-        jTextFieldEnt1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldEnt1ActionPerformed(evt);
-            }
-        });
 
         jLabel8.setText("xPath entidad 1:");
 
         jTextFieldxPath1.setText("//empleados/empleado");
         jTextFieldxPath1.setToolTipText("Consulta xPath de la entidad 1");
-        jTextFieldxPath1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldxPath1ActionPerformed(evt);
-            }
-        });
 
         jLabel9.setText("xPath entidad 2:");
 
         jTextFieldxPath2.setText("//clientes/cliente");
         jTextFieldxPath2.setToolTipText("Consulta xPath de la entidad 2");
-        jTextFieldxPath2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldxPath2ActionPerformed(evt);
-            }
-        });
 
         jLabel10.setText("xPath entidad 3:");
 
         jTextFieldxPath3.setText("//proveedores/proveedor");
         jTextFieldxPath3.setToolTipText("Consulta xPath de la entidad 3");
-        jTextFieldxPath3.addActionListener(new java.awt.event.ActionListener() {
+
+        jButtonGenerarFicheros.setBackground(new java.awt.Color(51, 255, 102));
+        jButtonGenerarFicheros.setText("Generar ficheros de entidades");
+        jButtonGenerarFicheros.setToolTipText("Haz clic para crear los ficheros de las entidades en el directorio definido");
+        jButtonGenerarFicheros.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldxPath3ActionPerformed(evt);
+                jButtonGenerarFicherosActionPerformed(evt);
+            }
+        });
+
+        jButtonInicarBD.setBackground(new java.awt.Color(0, 255, 255));
+        jButtonInicarBD.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        jButtonInicarBD.setText("Iniciar BD XML");
+        jButtonInicarBD.setToolTipText("Haz clic para iniciar la base de datos XML");
+        jButtonInicarBD.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonInicarBDActionPerformed(evt);
+            }
+        });
+
+        jButtonCerrarBD.setBackground(new java.awt.Color(255, 51, 102));
+        jButtonCerrarBD.setText("Cerrar BD XML");
+        jButtonCerrarBD.setToolTipText("Haz clic para cerrar la base de datos XML");
+        jButtonCerrarBD.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCerrarBDActionPerformed(evt);
             }
         });
 
@@ -196,7 +314,7 @@ public class InterfazGrafica extends javax.swing.JFrame {
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jTextFieldEnt1)
                                     .addComponent(jTextFieldEnt2)
-                                    .addComponent(jTextFieldEnt3, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(jTextFieldEnt3, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel5)
@@ -207,14 +325,11 @@ public class InterfazGrafica extends javax.swing.JFrame {
                                     .addComponent(jTextFieldNomBD))))
                         .addGap(30, 30, 30)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButtonGenerarFicheros, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel6)
                                 .addGap(27, 27, 27)
                                 .addComponent(jTextFieldDirectorioBDxml))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel8)
-                                .addGap(18, 18, 18)
-                                .addComponent(jTextFieldxPath1))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel9)
                                 .addGap(18, 18, 18)
@@ -222,7 +337,16 @@ public class InterfazGrafica extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel10)
                                 .addGap(18, 18, 18)
-                                .addComponent(jTextFieldxPath3)))))
+                                .addComponent(jTextFieldxPath3))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel8)
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jButtonInicarBD)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jButtonCerrarBD))
+                                    .addComponent(jTextFieldxPath1))))))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -239,7 +363,9 @@ public class InterfazGrafica extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jTextFieldDir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldDir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonInicarBD, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonCerrarBD, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -266,16 +392,20 @@ public class InterfazGrafica extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel10)
                             .addComponent(jTextFieldxPath3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(18, 18, 18)
+                .addComponent(jButtonGenerarFicheros, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jLabel11.setFont(new java.awt.Font("DejaVu Sans Mono", 1, 14)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(255, 0, 0));
-        jLabel11.setText("Ejercicio 2.a >> Listar todos los proveedores");
+        jPanelEntidad.setBackground(new java.awt.Color(255, 204, 204));
+
+        jLabel11.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
+        jLabel11.setText("Ejercicio 2.a >> Listar proveedores");
         jLabel11.setToolTipText("Listar todos los proveedores");
 
+        jButtonListarProveedores.setBackground(new java.awt.Color(255, 102, 102));
         jButtonListarProveedores.setText("Listar proveedores");
-        jButtonListarProveedores.setToolTipText("Haz clic para crear los ficheros de las entidades en el directorio definido");
+        jButtonListarProveedores.setToolTipText("Haz clic para listar todos los proveedores que exiten en la base de datos xml");
         jButtonListarProveedores.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonListarProveedoresActionPerformed(evt);
@@ -293,75 +423,81 @@ public class InterfazGrafica extends javax.swing.JFrame {
             jPanelEntidadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelEntidadLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanelEntidadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanelEntidadLayout.createSequentialGroup()
-                        .addComponent(jLabel11)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanelEntidadLayout.createSequentialGroup()
-                        .addComponent(jScrollPane1)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButtonListarProveedores)))
-                .addContainerGap())
+                .addGroup(jPanelEntidadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButtonListarProveedores)
+                    .addGroup(jPanelEntidadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1)))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
         jPanelEntidadLayout.setVerticalGroup(
             jPanelEntidadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelEntidadLayout.createSequentialGroup()
                 .addComponent(jLabel11)
-                .addGap(18, 18, 18)
-                .addGroup(jPanelEntidadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButtonListarProveedores, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(8, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButtonListarProveedores, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1)
+                .addContainerGap())
         );
 
-        jButtonGenerarFicheros.setText("Generar ficheros de entidades");
-        jButtonGenerarFicheros.setToolTipText("Haz clic para crear los ficheros de las entidades en el directorio definido");
-        jButtonGenerarFicheros.addActionListener(new java.awt.event.ActionListener() {
+        jPanelXpath.setBackground(new java.awt.Color(204, 255, 255));
+
+        jLabel12.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
+        jLabel12.setText("Ejercicio 2.b >> Listar empleado");
+        jLabel12.setToolTipText("Listar empleado en función del ID seleccionado");
+
+        jTextAreaListadoEmpleados.setColumns(20);
+        jTextAreaListadoEmpleados.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
+        jTextAreaListadoEmpleados.setRows(5);
+        jScrollPane2.setViewportView(jTextAreaListadoEmpleados);
+
+        jButtonListarEmpleados.setBackground(new java.awt.Color(0, 153, 255));
+        jButtonListarEmpleados.setText("Listar empleados");
+        jButtonListarEmpleados.setToolTipText("Haz clic para listar los empleados según el ID seleccionado");
+        jButtonListarEmpleados.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonGenerarFicherosActionPerformed(evt);
+                jButtonListarEmpleadosActionPerformed(evt);
             }
         });
 
-        jButtonInicarBD.setText("Iniciar base de datos XML");
-        jButtonInicarBD.setToolTipText("Haz clic para crear los ficheros de las entidades en el directorio definido");
-        jButtonInicarBD.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonInicarBDActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButtonInicarBD, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(37, 37, 37)
-                .addComponent(jButtonGenerarFicheros)
-                .addContainerGap())
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(19, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButtonGenerarFicheros, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButtonInicarBD, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
+        jLabel13.setText("id empleado: ");
 
         javax.swing.GroupLayout jPanelXpathLayout = new javax.swing.GroupLayout(jPanelXpath);
         jPanelXpath.setLayout(jPanelXpathLayout);
         jPanelXpathLayout.setHorizontalGroup(
             jPanelXpathLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 873, Short.MAX_VALUE)
+            .addGroup(jPanelXpathLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanelXpathLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelXpathLayout.createSequentialGroup()
+                        .addComponent(jLabel13)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jComboBoxIdsEmpleados, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                        .addComponent(jButtonListarEmpleados))
+                    .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanelXpathLayout.setVerticalGroup(
             jPanelXpathLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 150, Short.MAX_VALUE)
+            .addGroup(jPanelXpathLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel12)
+                .addGap(18, 18, 18)
+                .addGroup(jPanelXpathLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(jComboBoxIdsEmpleados, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonListarEmpleados, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2)
+                .addContainerGap())
         );
 
+        jButtonSalir.setBackground(new java.awt.Color(255, 0, 51));
+        jButtonSalir.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        jButtonSalir.setForeground(new java.awt.Color(255, 255, 255));
         jButtonSalir.setText("Salir de la aplicación");
         jButtonSalir.setToolTipText("Haz clic para crear los ficheros de las entidades en el directorio definido");
         jButtonSalir.addActionListener(new java.awt.event.ActionListener() {
@@ -381,9 +517,191 @@ public class InterfazGrafica extends javax.swing.JFrame {
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(7, Short.MAX_VALUE)
-                .addComponent(jButtonSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jButtonSalir, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jPanelXpath1.setBackground(new java.awt.Color(255, 255, 204));
+
+        jLabel14.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
+        jLabel14.setText("Ejercicio 2.c >> Listar productos");
+        jLabel14.setToolTipText("Listar productos que superen el indicado");
+
+        jTextAreaListadoProductos.setColumns(20);
+        jTextAreaListadoProductos.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
+        jTextAreaListadoProductos.setRows(5);
+        jScrollPane3.setViewportView(jTextAreaListadoProductos);
+
+        jButtonListarProductos.setBackground(new java.awt.Color(204, 204, 0));
+        jButtonListarProductos.setText("Listar productos");
+        jButtonListarProductos.setToolTipText("Haz clic para listar los productos cuyo precio es mayor al indicado");
+        jButtonListarProductos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonListarProductosActionPerformed(evt);
+            }
+        });
+
+        jLabel15.setText("precio >  ");
+        jLabel15.setToolTipText("");
+
+        jTextFieldPrecio.setToolTipText("Se mostrarán productos de mayor precio al indicado (tipo de dato Double)");
+
+        javax.swing.GroupLayout jPanelXpath1Layout = new javax.swing.GroupLayout(jPanelXpath1);
+        jPanelXpath1.setLayout(jPanelXpath1Layout);
+        jPanelXpath1Layout.setHorizontalGroup(
+            jPanelXpath1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelXpath1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanelXpath1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelXpath1Layout.createSequentialGroup()
+                        .addComponent(jLabel15)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextFieldPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButtonListarProductos)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jLabel14, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3))
+                .addGap(9, 9, 9))
+        );
+        jPanelXpath1Layout.setVerticalGroup(
+            jPanelXpath1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelXpath1Layout.createSequentialGroup()
+                .addComponent(jLabel14)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanelXpath1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel15)
+                    .addComponent(jButtonListarProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3)
+                .addContainerGap())
+        );
+
+        jPanelXpath2.setBackground(new java.awt.Color(204, 204, 255));
+
+        jLabel16.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
+        jLabel16.setText("Ejercicio 2.d >> Listar pedidos");
+        jLabel16.setToolTipText("Listar pedidos en función del ID seleccionado");
+
+        jTextAreaListadoPedidos.setColumns(20);
+        jTextAreaListadoPedidos.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
+        jTextAreaListadoPedidos.setRows(5);
+        jScrollPane4.setViewportView(jTextAreaListadoPedidos);
+
+        jButtonListarPedidos.setBackground(new java.awt.Color(153, 102, 255));
+        jButtonListarPedidos.setText("Listar pedidos");
+        jButtonListarPedidos.setToolTipText("Haz clic para listar los pedidos según el ID seleccionado");
+        jButtonListarPedidos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonListarPedidosActionPerformed(evt);
+            }
+        });
+
+        jLabel17.setText("id pedido: ");
+
+        javax.swing.GroupLayout jPanelXpath2Layout = new javax.swing.GroupLayout(jPanelXpath2);
+        jPanelXpath2.setLayout(jPanelXpath2Layout);
+        jPanelXpath2Layout.setHorizontalGroup(
+            jPanelXpath2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelXpath2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanelXpath2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelXpath2Layout.createSequentialGroup()
+                        .addComponent(jLabel17)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jComboBoxIdsPedidos, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButtonListarPedidos))
+                    .addComponent(jLabel16, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 259, Short.MAX_VALUE)
+                    .addComponent(jScrollPane4))
+                .addContainerGap())
+        );
+        jPanelXpath2Layout.setVerticalGroup(
+            jPanelXpath2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelXpath2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel16)
+                .addGap(18, 18, 18)
+                .addGroup(jPanelXpath2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel17)
+                    .addComponent(jComboBoxIdsPedidos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonListarPedidos, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jPanelXpath3.setBackground(new java.awt.Color(255, 204, 153));
+
+        jLabel18.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
+        jLabel18.setText("Ejercicio 2.e >> Actualizar precio producto");
+        jLabel18.setToolTipText("Actualizar el precio de un producto en función del ID seleccionado");
+
+        jTextAreaListadoPrecio.setColumns(20);
+        jTextAreaListadoPrecio.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
+        jTextAreaListadoPrecio.setRows(5);
+        jScrollPane5.setViewportView(jTextAreaListadoPrecio);
+
+        jButtonActualizarPrecio.setBackground(new java.awt.Color(255, 204, 51));
+        jButtonActualizarPrecio.setText("Actualizar precio");
+        jButtonActualizarPrecio.setToolTipText("Haz clic para actualizar el precio del producto según el ID seleccionado y la cantidad introducida");
+        jButtonActualizarPrecio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonActualizarPrecioActionPerformed(evt);
+            }
+        });
+
+        jLabel19.setText("Nombre producto: ");
+
+        jLabel20.setText("Nuevo precio: ");
+
+        jTextFieldNuevoPrecio.setToolTipText("Introducir el nuevo precio del producto (tipo de dato Double)");
+
+        javax.swing.GroupLayout jPanelXpath3Layout = new javax.swing.GroupLayout(jPanelXpath3);
+        jPanelXpath3.setLayout(jPanelXpath3Layout);
+        jPanelXpath3Layout.setHorizontalGroup(
+            jPanelXpath3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelXpath3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanelXpath3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanelXpath3Layout.createSequentialGroup()
+                        .addComponent(jScrollPane5)
+                        .addContainerGap())
+                    .addGroup(jPanelXpath3Layout.createSequentialGroup()
+                        .addComponent(jLabel18, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
+                        .addGap(102, 102, 102))
+                    .addGroup(jPanelXpath3Layout.createSequentialGroup()
+                        .addGroup(jPanelXpath3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel19)
+                            .addComponent(jLabel20))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanelXpath3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanelXpath3Layout.createSequentialGroup()
+                                .addComponent(jTextFieldNuevoPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(28, 28, 28)
+                                .addComponent(jButtonActualizarPrecio))
+                            .addComponent(jComboBoxNombresProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+        );
+        jPanelXpath3Layout.setVerticalGroup(
+            jPanelXpath3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelXpath3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel18)
+                .addGap(18, 18, 18)
+                .addGroup(jPanelXpath3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel19)
+                    .addComponent(jComboBoxNombresProductos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanelXpath3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel20)
+                    .addComponent(jTextFieldNuevoPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonActualizarPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(22, 22, 22)
+                .addComponent(jScrollPane5)
                 .addContainerGap())
         );
 
@@ -394,162 +712,197 @@ public class InterfazGrafica extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanelXpath, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanelEntidad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jPanelXpath3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jPanelEntidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jPanelXpath1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jPanelXpath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jPanelXpath2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 6, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jPanelEntidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jPanelXpath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanelXpath3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanelXpath, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanelXpath2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanelEntidad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanelXpath1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(27, 27, 27)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(8, 8, 8))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextFieldDirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldDirActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldDirActionPerformed
-
+    /**
+     * Gestiona el evento de generación de ficheros XML a partir de las rutas y
+     * entidades configuradas por el usuario. Realiza validaciones de entrada
+     * antes de delegar la tarea al manejador de la base de datos.
+     *
+     * @param evt Evento de acción disparado por el botón.
+     */
     private void jButtonGenerarFicherosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonGenerarFicherosActionPerformed
         // TODO add your handling code here:
 
-        // Comprobamos el estado del manejador antes de nada
+        String mensaje;
+        // Validación de la integridad del objeto manejador antes de operar
         if (manejador != null) {
             try {
-                // 1. Recogemos el directorio y validamos que no esté vacío
+                // Extracción y normalización de parámetros de configuración
                 String directorioStr = jTextFieldDir.getText().trim();
-                
+
+                // Verificación de campos obligatorios para prevenir excepciones de E/S
                 if (directorioStr.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Debe especificar un nombre para el directorio de destino.");
+                    mensaje = "Debe especificar un nombre para el directorio de destino, el campo de texto no puede estar vacío.";
+                    System.err.println(mensaje);
+                    throw new IllegalArgumentException(mensaje);
+
                 } else {
-                    // 2. Preparamos los arrays con la información de los JTextFields
-                    String[] entidades = {jTextFieldEnt1.getText(), jTextFieldEnt2.getText(), jTextFieldEnt3.getText()};
-                    String[] xpaths = {jTextFieldxPath1.getText(), jTextFieldxPath2.getText(), jTextFieldxPath3.getText()};
+                    String entidad1 = jTextFieldEnt1.getText().trim();
+                    String entidad2 = jTextFieldEnt2.getText().trim();
+                    String entidad3 = jTextFieldEnt3.getText().trim();
 
-                    // 3. Llamamos al método masivo del manejador
-                    manejador.exportarDesdeInterfaz(directorioStr, entidades, xpaths);
+                    if (entidad1.isEmpty() || entidad2.isEmpty() || entidad3.isEmpty()) {
+                        mensaje = "Alguna de las entidades no están definidas, el campo de texto no puede estar vacío.";
+                        System.err.println(mensaje);
+                        throw new IllegalArgumentException(mensaje);
+                    }
 
-                    // 4. Éxito: Feedback visual para el usuario
+                    String xPath1 = jTextFieldxPath1.getText().trim();
+                    String xPath2 = jTextFieldxPath2.getText().trim();
+                    String xPath3 = jTextFieldxPath3.getText().trim();
+
+                    if (xPath1.isEmpty() || xPath2.isEmpty() || xPath3.isEmpty()) {
+                        mensaje = "Alguna de las consultas xPath están vacías, el campo de texto no puede estar vacío.";
+                        System.err.println(mensaje);
+                        throw new IllegalArgumentException(mensaje);
+                    }
+
+                    String[] entidades = {entidad1, entidad2, entidad3};
+                    String[] xpaths = {xPath1, xPath2, xPath3};
+
+                    // Ejecución del procedimiento masivo de exportación
+                    manejador.recibirDatos(directorioStr, entidades, xpaths);
+
                     JOptionPane.showMessageDialog(this, "Proceso finalizado correctamente.\nFicheros generados en: " + directorioStr);
                 }
-                
+
+            } catch (IllegalArgumentException ex) {
+                // Capturar errores de validación previa (campos vacíos)
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de validación", JOptionPane.ERROR_MESSAGE);
             } catch (BaseXException ex) {
-                // Si el error viene específicamente de BaseX (ej: error en XPath)
-                JOptionPane.showMessageDialog(this, "Error de BaseX: " + ex.getMessage(), "Error en Motor XML", JOptionPane.ERROR_MESSAGE);
-                
+                // Se captan errores de base de datos XML (BaseX)
+                JOptionPane.showMessageDialog(this, "Error de Base de Datos XML (BaseX): " + ex.getMessage(), "Error en Motor XML", JOptionPane.ERROR_MESSAGE);
             } catch (IOException e) {
-                // Errores de disco, permisos, carpeta...
-                JOptionPane.showMessageDialog(this, "Error de archivos: " + e.getMessage(), "Error E/S", JOptionPane.ERROR_MESSAGE);
+                // Se captan errores de lectura/escritura de archivos
+                JOptionPane.showMessageDialog(this, "Error de E/S: " + e.getMessage(), "Error E/S", JOptionPane.ERROR_MESSAGE);
             } catch (Exception e) {
-                // Errores de BaseX, consultas XPath mal escritas, etc.
-                JOptionPane.showMessageDialog(this, "Error en Base de Datos: " + e.getMessage(), "Error XML", JOptionPane.ERROR_MESSAGE);
+                // Se captar otros errores que se puedan dar
+                JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage(), "Error XML", JOptionPane.ERROR_MESSAGE);
             }
         } else {
-            // Este caso técnicamente no debería ocurrir si el botón está desactivado, 
-            // pero lo mantenemos como red de seguridad profesional.
+            // Técnicamente no debería ocurrir si el botón está desactivado, pero se mantiene por seguridad.
             JOptionPane.showMessageDialog(this, "La base de datos no está iniciada.", "Aviso", JOptionPane.WARNING_MESSAGE);
         }
 
     }//GEN-LAST:event_jButtonGenerarFicherosActionPerformed
 
-    private void jTextFieldDirectorioBDxmlActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldDirectorioBDxmlActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldDirectorioBDxmlActionPerformed
-
-    private void jTextFieldEnt1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldEnt1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldEnt1ActionPerformed
-
-    private void jTextFieldEnt2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldEnt2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldEnt2ActionPerformed
-
-    private void jTextFieldEnt3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldEnt3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldEnt3ActionPerformed
-
-    private void jTextFieldNomBDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldNomBDActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldNomBDActionPerformed
-
-    private void jTextFieldxPath1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldxPath1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldxPath1ActionPerformed
-
-    private void jTextFieldxPath2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldxPath2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldxPath2ActionPerformed
-
-    private void jTextFieldxPath3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldxPath3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldxPath3ActionPerformed
-
+    /**
+     * Inicializa la conexión con el motor BaseX utilizando los parámetros
+     * introducidos por el usuario. Tras una conexión exitosa, activa los
+     * componentes de la interfaz y precarga los datos en los selectores.
+     *
+     * @param evt Evento de acción disparado por el botón.
+     */
     private void jButtonInicarBDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInicarBDActionPerformed
         // TODO add your handling code here:
+        String mensaje;
 
         try {
-            // Obtenemos los datos de la interfaz
+
             String nombre = jTextFieldNomBD.getText().trim();
             String ruta = jTextFieldDirectorioBDxml.getText().trim();
 
-            // Validación básica de campos vacíos
             if (nombre.isEmpty() || ruta.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Por favor, rellene el nombre y la ruta del XML.", "Campos vacíos", JOptionPane.WARNING_MESSAGE);
+                mensaje = "El nombre de la base de datos y la ruta están vacías, los campos de texto no pueden estar vacíos.";
+                System.err.println(mensaje);
+                throw new IllegalArgumentException(mensaje);
             } else {
-                // Instanciamos el manejador (esto ejecuta el conectar() interno)
+                // Instanciación del manejador, lo cual establece el contexto con BaseX
                 manejador = new ManejadorXML(nombre, ruta);
-                
                 JOptionPane.showMessageDialog(this, "Conexión con BaseX establecida con éxito.");
 
-                // Si todo ha ido bien, habilitamos el botón de generar
-                jButtonInicarBD.setEnabled(false);
-                jButtonGenerarFicheros.setEnabled(true);
-                jButtonListarProveedores.setEnabled(true);
-                jTextFieldNomBD.setEditable(false);
-                jTextFieldDirectorioBDxml.setEditable(false);
+                // Habilitación de la lógica operativa y carga inicial de los componentes de selección
+                activarComponentes();
+                iniciarComboIDempleados();
+                iniciarComboIDpedidos();
+                iniciarComboNombresProductos();
             }
+
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Campos vacíos", JOptionPane.WARNING_MESSAGE);
+        } catch (BaseXException ex) {
+            JOptionPane.showMessageDialog(this, "Error de Base de Datos XML (BaseX): " + ex.getMessage(), "Error en Motor XML", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error de E/S: " + e.getMessage(), "Error E/S", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
-            // Si el XML no existe o BaseX falla, capturamos el error aquí
-            JOptionPane.showMessageDialog(this, "Error al iniciar base de datos: " + e.getMessage(), "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage(), "Error XML", JOptionPane.ERROR_MESSAGE);
         }
 
     }//GEN-LAST:event_jButtonInicarBDActionPerformed
 
+    /**
+     * Gestiona la terminación controlada de la aplicación, solicitando
+     * confirmación al usuario y asegurando el cierre de los recursos de la base
+     * de datos.
+     *
+     * @param evt Evento de acción disparado por el botón.
+     */
     private void jButtonSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSalirActionPerformed
         // TODO add your handling code here:
 
         int confirmacion = JOptionPane.showConfirmDialog(this,
                 "¿Estás seguro de que deseas salir?", "Confirmar salida",
                 JOptionPane.YES_NO_OPTION);
-        
+
         if (confirmacion == JOptionPane.YES_OPTION) {
             if (manejador != null) {
                 manejador.cerrar();
             }
-            System.exit(0); // Cerramos todo
+            System.exit(0);
         }
     }//GEN-LAST:event_jButtonSalirActionPerformed
 
+    /**
+     * Intercepta el evento de cierre de ventana para asegurar la liberación de
+     * recursos.
+     *
+     * @param evt Evento de cierre de ventana.
+     */
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
         int confirmacion = JOptionPane.showConfirmDialog(this,
                 "¿Estás seguro de que deseas salir?", "Confirmar salida",
                 JOptionPane.YES_NO_OPTION);
-        
+
         if (confirmacion == JOptionPane.YES_OPTION) {
             if (manejador != null) {
                 manejador.cerrar();
@@ -558,17 +911,192 @@ public class InterfazGrafica extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowClosing
 
+    /**
+     * Recupera y muestra el listado de proveedores en el área de texto
+     * correspondiente.
+     *
+     * @param evt Evento de acción disparado por el botón.
+     */
     private void jButtonListarProveedoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonListarProveedoresActionPerformed
         // TODO add your handling code here:
         if (manejador != null) {
             try {
                 String listado = manejador.obtenerListadoProveedores();
                 jTextAreaListadoProveedores.setText(listado);
+            } catch (BaseXException ex) {
+                JOptionPane.showMessageDialog(this, "Error de Base de Datos XML (BaseX): " + ex.getMessage(), "Error en Motor XML", JOptionPane.ERROR_MESSAGE);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Error de E/S: " + e.getMessage(), "Error E/S", JOptionPane.ERROR_MESSAGE);
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Error al listar proveedores: " + e.getMessage());
+                JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage(), "Error XML", JOptionPane.ERROR_MESSAGE);
             }
         }
     }//GEN-LAST:event_jButtonListarProveedoresActionPerformed
+
+    /**
+     * Ejecuta la recuperación de datos de un empleado específico seleccionado
+     * mediante el componente ComboBox.
+     *
+     * @param evt Evento de acción disparado por el botón.
+     */
+    private void jButtonListarEmpleadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonListarEmpleadosActionPerformed
+        // TODO add your handling code here:
+
+        String id = (String) jComboBoxIdsEmpleados.getSelectedItem();
+
+        if (manejador != null) {
+            try {
+                String listado = manejador.obtenerListadoEmpleados(id);
+                jTextAreaListadoEmpleados.setText(listado);
+            } catch (BaseXException ex) {
+                JOptionPane.showMessageDialog(this, "Error de Base de Datos XML (BaseX): " + ex.getMessage(), "Error en Motor XML", JOptionPane.ERROR_MESSAGE);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Error de E/S: " + e.getMessage(), "Error E/S", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage(), "Error XML", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+    }//GEN-LAST:event_jButtonListarEmpleadosActionPerformed
+
+    /**
+     * Desconecta de forma segura el manejador de la base de datos y restablece
+     * el estado de la interfaz gráfica a modo desconectado.
+     *
+     * @param evt Evento de acción disparado por el botón.
+     */
+    private void jButtonCerrarBDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCerrarBDActionPerformed
+        // TODO add your handling code here:
+        int confirmacion = JOptionPane.showConfirmDialog(this,
+                "¿Estás seguro de que deseas cerrar la Base de Datos XML?", "Confirmar salida",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            if (manejador != null) {
+                manejador.cerrar();
+            }
+            // Restauración del estado de la interfaz
+            desactivarComponentes();
+        }
+
+
+    }//GEN-LAST:event_jButtonCerrarBDActionPerformed
+
+    /**
+     * Filtra y muestra productos cuyo precio es superior al valor especificado
+     * en el campo de texto.
+     *
+     * @param evt Evento de acción disparado por el botón.
+     */
+    private void jButtonListarProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonListarProductosActionPerformed
+        // TODO add your handling code here:
+
+        if (manejador != null) {
+            // Variable para almacenar el mensaje de salida
+            String mensaje;
+
+            try {
+
+                // Validación del precio introducido
+                Double precio;
+                try {
+                    precio = Double.parseDouble(jTextFieldPrecio.getText().trim().replace(",", "."));
+                    if (precio <= 0) {
+                        mensaje = "Error: El precio debe ser mayor que cero.";
+                        System.err.println(mensaje);
+                        throw new IllegalArgumentException(mensaje);
+                    }
+                } catch (NumberFormatException e) {
+                    mensaje = "Error: El precio debe ser un número decimal válido (tipo dato Double).";
+                    System.err.println(mensaje);
+                    throw new IllegalArgumentException(mensaje);
+                }
+
+                String listado = manejador.obtenerListadoProductos(precio);
+                jTextAreaListadoProductos.setText(listado);
+
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de validación", JOptionPane.ERROR_MESSAGE);
+            } catch (BaseXException ex) {
+                JOptionPane.showMessageDialog(this, "Error de Base de Datos XML (BaseX): " + ex.getMessage(), "Error en Motor XML", JOptionPane.ERROR_MESSAGE);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Error de E/S: " + e.getMessage(), "Error E/S", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.toString());
+            }
+        }
+    }//GEN-LAST:event_jButtonListarProductosActionPerformed
+
+    /**
+     * Recupera y muestra el detalle de un pedido específico seleccionado en el
+     * ComboBox.
+     *
+     * @param evt Evento de acción disparado por el botón.
+     */
+    private void jButtonListarPedidosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonListarPedidosActionPerformed
+        // TODO add your handling code here:
+
+        String id = (String) jComboBoxIdsPedidos.getSelectedItem();
+
+        if (manejador != null) {
+            try {
+                String listado = manejador.obtenerListadoPedidos(id);
+                jTextAreaListadoPedidos.setText(listado);
+            } catch (BaseXException ex) {
+                JOptionPane.showMessageDialog(this, "Error de Base de Datos XML (BaseX): " + ex.getMessage(), "Error en Motor XML", JOptionPane.ERROR_MESSAGE);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Error de E/S: " + e.getMessage(), "Error E/S", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage(), "Error XML", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_jButtonListarPedidosActionPerformed
+
+    /**
+     * Actualiza el valor del precio para un producto seleccionado y actualiza
+     * la vista.
+     *
+     * @param evt Evento de acción disparado por el botón.
+     */
+    private void jButtonActualizarPrecioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonActualizarPrecioActionPerformed
+        // TODO add your handling code here:
+
+        String nombreProducto = (String) jComboBoxNombresProductos.getSelectedItem();
+
+        if (manejador != null) {
+            String mensaje;
+            try {
+                // Validación y conversión del nuevo precio solicitado
+                Double nuevoPrecio;
+                try {
+                    nuevoPrecio = Double.parseDouble(jTextFieldNuevoPrecio.getText().trim().replace(",", "."));
+                    if (nuevoPrecio <= 0) {
+                        mensaje = "Error: El nuevo precio debe ser mayor que cero.";
+                        System.err.println(mensaje);
+                        throw new IllegalArgumentException(mensaje);
+                    }
+                } catch (NumberFormatException e) {
+                    mensaje = "Error: El nuevo precio debe ser un número decimal válido (tipo dato Double).";
+                    System.err.println(mensaje);
+                    throw new IllegalArgumentException(mensaje);
+                }
+
+                // Ejecución de la actualización atómica
+                String listado = manejador.actualizarPrecioProducto(nombreProducto, nuevoPrecio);
+                jTextAreaListadoPrecio.setText(listado);
+
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de validación", JOptionPane.ERROR_MESSAGE);
+            } catch (BaseXException ex) {
+                JOptionPane.showMessageDialog(this, "Error de Base de Datos XML (BaseX): " + ex.getMessage(), "Error en Motor XML", JOptionPane.ERROR_MESSAGE);
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Error de E/S: " + e.getMessage(), "Error E/S", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.toString());
+            }
+        }
+
+    }//GEN-LAST:event_jButtonActualizarPrecioActionPerformed
 
     /**
      * @param args the command line arguments
@@ -606,14 +1134,31 @@ public class InterfazGrafica extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonActualizarPrecio;
+    private javax.swing.JButton jButtonCerrarBD;
     private javax.swing.JButton jButtonGenerarFicheros;
     private javax.swing.JButton jButtonInicarBD;
+    private javax.swing.JButton jButtonListarEmpleados;
+    private javax.swing.JButton jButtonListarPedidos;
+    private javax.swing.JButton jButtonListarProductos;
     private javax.swing.JButton jButtonListarProveedores;
     private javax.swing.JButton jButtonSalir;
+    private javax.swing.JComboBox<String> jComboBoxIdsEmpleados;
+    private javax.swing.JComboBox<String> jComboBoxIdsPedidos;
+    private javax.swing.JComboBox<String> jComboBoxNombresProductos;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -622,11 +1167,21 @@ public class InterfazGrafica extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanelEntidad;
     private javax.swing.JPanel jPanelXpath;
+    private javax.swing.JPanel jPanelXpath1;
+    private javax.swing.JPanel jPanelXpath2;
+    private javax.swing.JPanel jPanelXpath3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JTextArea jTextAreaListadoEmpleados;
+    private javax.swing.JTextArea jTextAreaListadoPedidos;
+    private javax.swing.JTextArea jTextAreaListadoPrecio;
+    private javax.swing.JTextArea jTextAreaListadoProductos;
     private javax.swing.JTextArea jTextAreaListadoProveedores;
     private javax.swing.JTextField jTextFieldDir;
     private javax.swing.JTextField jTextFieldDirectorioBDxml;
@@ -634,6 +1189,8 @@ public class InterfazGrafica extends javax.swing.JFrame {
     private javax.swing.JTextField jTextFieldEnt2;
     private javax.swing.JTextField jTextFieldEnt3;
     private javax.swing.JTextField jTextFieldNomBD;
+    private javax.swing.JTextField jTextFieldNuevoPrecio;
+    private javax.swing.JTextField jTextFieldPrecio;
     private javax.swing.JTextField jTextFieldxPath1;
     private javax.swing.JTextField jTextFieldxPath2;
     private javax.swing.JTextField jTextFieldxPath3;
