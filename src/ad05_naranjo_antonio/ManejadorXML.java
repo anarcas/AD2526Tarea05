@@ -8,6 +8,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.basex.core.BaseXException;
 import org.basex.core.Context;
 import org.basex.core.cmd.CreateDB;
@@ -37,7 +41,7 @@ public class ManejadorXML {
      * @throws Exception Si ocurre un fallo crítico durante la inicialización.
      */
     public ManejadorXML(String nombreBD, String rutaXML) throws Exception {
-        this.contexto = new Context(); // Inicializamos el motor
+        this.contexto = new Context();
         this.nombreDB = nombreBD;
         this.directorioDB = rutaXML;
 
@@ -62,11 +66,12 @@ public class ManejadorXML {
      * Libera los recursos del sistema asociados al contexto activo de la base de datos.
      * Se debe ejecutar al finalizar la aplicación.
      */
-    public void cerrar() {
+        public void cerrar() {
         // Verifica la integridad del contexto antes de proceder al cierre para evitar excepciones.
         if (contexto != null) {
             contexto.close();
         }
+        
     }
 
     /**
@@ -299,7 +304,7 @@ public class ManejadorXML {
         String[] arrayPrecios = precios.split("\\n");
 
         for (int i = 0; i < arrayProductos.length; i++) {
-            sb.append(String.format("%-20s %-12s%n", arrayProductos[i].trim(), arrayPrecios[i].trim()));
+            sb.append(String.format("%-20s %8.2f%n", arrayProductos[i].trim(), Double.parseDouble(arrayPrecios[i].trim())));
         }
 
         return sb.toString();
@@ -346,8 +351,8 @@ public class ManejadorXML {
      */
     public String obtenerListadoPedidos(String id) throws BaseXException, IOException {
         // Se genera una estructura de datos clave:valor mediante concatenación en XQuery
-        String xQuery = "for $p in //pedidos/pedido[@id='" + id + "']/* "
-                      + "return concat(name($p), '____', data($p))";
+        String xQuery = "for $p in //pedidos/pedido[@id='" + id + "']//*[not(*)] "
+                      + "return concat(name($p), '____', string($p))";
 
         String respuesta = sentenciar(xQuery);
 
@@ -355,24 +360,38 @@ public class ManejadorXML {
             return "No se encontraron datos para el pedido: " + id;
         }
 
+        // Se declara un mapa para organizar datos por etiquetas; mantiene el orden original.
+        Map<String, List<String>> mapaPedidos = new LinkedHashMap<>();
         String[] resultados = respuesta.split("\\n");
-        StringBuilder sb = new StringBuilder();
 
-        sb.append("--- Datos del Pedido: ").append(id).append(" ---\n");
-
-        
-        // Se procesa cada línea aplicando una división por el delimitador definido
         for (String linea : resultados) {
-            //System.out.println(linea);
             if (!linea.trim().isEmpty()) {
-                // Se usa el delimitador "____" como regex
+                // Se divide la línea en etiqueta y valor usando el delimitador.
                 String[] partes = linea.split("_{4}");
-
                 String etiqueta = partes[0].toUpperCase().trim();
                 String valor = (partes.length > 1) ? partes[1].trim() : "Sin valor";
 
-                sb.append(String.format("%10s --> %12s%n", etiqueta, valor));
+            // Se obtiene la lista asociada a la etiqueta o la crea si no existe.
+            List<String> listaValores = mapaPedidos.get(etiqueta);
+            if (listaValores == null) {
+                listaValores = new ArrayList<>();
+                mapaPedidos.put(etiqueta, listaValores);
             }
+
+            // Se agrega el valor a la lista asociada a su etiqueta.
+            listaValores.add(valor);            }
+        }
+
+        // Se contruye el StringBuilder para generar la salida final.
+        StringBuilder sb = new StringBuilder();
+        sb.append("--- Datos del Pedido: ").append(id).append(" ---\n");
+        // Se procesa cada línea aplicando una división por el delimitador definido
+        for (Map.Entry<String, List<String>> entry : mapaPedidos.entrySet()) {
+            String etiqueta = entry.getKey();
+            List<String> valores = entry.getValue();
+            // Se unen múltiples valores con coma si encuentra varios elementos.
+            String valorFormateado = String.join(", ", valores);
+            sb.append(String.format("%-15s --> %s%n", etiqueta, valorFormateado));
         }
 
         return sb.toString();
@@ -435,7 +454,7 @@ public class ManejadorXML {
             System.err.println("DEBUG: No se encontró el producto con nombre: " + nombreProducto);
         }
 
-        sb.append(String.format("%-20s %-10s", nombreProducto, precioActualizado));
+        sb.append(String.format("%-20s %6.2f", nombreProducto, Double.parseDouble(precioActualizado)));
 
         return sb.toString();
         
